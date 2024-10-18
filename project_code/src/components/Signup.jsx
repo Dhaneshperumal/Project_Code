@@ -89,6 +89,7 @@ const Signup = () => {
                         className="password"
                         label="Password"
                         variant="outlined"
+                        type='password'
                         fullWidth
                         value={password}
                         onChange={handlePasswordChange}
@@ -100,6 +101,7 @@ const Signup = () => {
                         label="Confirm Password"
                         variant="outlined"
                         fullWidth
+                        type='password'
                         value={confirmPassword}
                         onChange={handleConfirmPasswordChange}
                         error={Boolean(confirmPasswordError)}
