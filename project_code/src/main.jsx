@@ -1,13 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { StyledEngineProvider } from '@mui/material'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css';
+ // Ensure you have an App component in the src directory
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-     <StyledEngineProvider injectFirst>
-        <App />
-      </StyledEngineProvider>   
-  </StrictMode>,
-)
+const rootElement = document.getElementById('root')
+if (!rootElement) throw new Error('Failed to find the root element')
+
+// Create root
+const root = ReactDOM.createRoot(rootElement)
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
