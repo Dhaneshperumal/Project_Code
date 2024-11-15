@@ -17,16 +17,17 @@ import JuniorDevDashboard from "./components/JuniorDevDashboard";
 import ProjectUpload from "./components/ProjectUpload";
 import Reports from "./components/Reports";
 import Unauthorized from "./components/Unauthorized";
+import Projects from "./components/Projects";
 
 const RequireAuth = ({ allowedRoles }) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   try {
-    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    const decodedToken = JSON.parse(atob(token.split(".")[1]));
     const userRole = decodedToken.role;
 
     if (allowedRoles.includes(userRole)) {
@@ -35,14 +36,14 @@ const RequireAuth = ({ allowedRoles }) => {
       return <Navigate to="/unauthorized" replace />;
     }
   } catch (error) {
-    console.error('Token parsing error:', error);
-    localStorage.removeItem('token');
+    console.error("Token parsing error:", error);
+    localStorage.removeItem("token");
     return <Navigate to="/login" replace />;
   }
 };
 
 function App() {
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,29 +59,40 @@ function App() {
     }
   }, []);
 
+  const getDefaultDashboard = () => {
+    switch (role) {
+      case "Admin":
+        return "/admin";
+      case "Senior Developer":
+        return "/senior-dashboard";
+      case "Junior Developer":
+        return "/junior-dashboard";
+      default:
+        return "/unauthorized";
+    }
+  };
+
   return (
     <div className="app">
       <Router>
         <Header />
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
-          
-          {/* Role-based redirection to dashboards */}
-          <Route element={<RequireAuth allowedRoles={['Admin', 'Senior Developer', 'Junior Developer']} />}>
-            <Route path="/" element={
-              role === 'Admin' ? <Navigate to="/admin" replace /> :
-              role === 'Senior Developer' ? <Navigate to="/senior-dashboard" replace /> :
-              role === 'Junior Developer' ? <Navigate to="/junior-dashboard" replace /> :
-              <Navigate to="/unauthorized" replace />
-            } />
+
+          {/* Protected Routes */}
+          <Route element={<RequireAuth allowedRoles={["Admin", "Senior Developer", "Junior Developer"]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/senior-dashboard" element={<SeniorDevDashboard />} />
-            <Route path="/junior-dashboard" element={<JuniorDevDashboard />} />
+            <Route path="/senior" element={<SeniorDevDashboard />} />
+            <Route path="/junior" element={<JuniorDevDashboard />} />
+            <Route path="/projects" element={<Projects />} />
             <Route path="/upload" element={<ProjectUpload />} />
             <Route path="/reports" element={<Reports />} />
+            {/* Role-Based Default Route */}
+            <Route path="/" element={<Navigate to={getDefaultDashboard()} replace />} />
           </Route>
         </Routes>
       </Router>

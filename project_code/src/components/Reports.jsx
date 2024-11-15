@@ -12,7 +12,6 @@ import {
   Typography 
 } from '@mui/material';
 import axios from 'axios';
-import Header from './Header';
 import AsideBar from './Asidebar';
 
 const Reports = () => {

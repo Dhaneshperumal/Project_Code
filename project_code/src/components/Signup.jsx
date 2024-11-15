@@ -77,11 +77,11 @@ const Signup = () => {
   return (
     <>
     <Container maxWidth="xs">
-      <Paper className="paper" elevation={3}>
-        <img src="./Code_review logo.png" alt="Code Review Logo" />
+      <Paper className="paper p-2" elevation={3}>
+        <img src="./Code_review logo.png" alt="Code Review Logo" style={{ display: 'block', margin: '10px auto' }} />
         <form onSubmit={handleSubmit}>
           <TextField
-            className="email"
+            className="email mb-3"
             label="Email"
             variant="outlined"
             fullWidth
@@ -90,7 +90,7 @@ const Signup = () => {
             error={Boolean(emailError)}
             helperText={emailError}
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth className='mb-3'>
             <InputLabel id="role-label">Role</InputLabel>
             <Select
               labelId="role-label"
@@ -105,7 +105,7 @@ const Signup = () => {
             </Select>
           </FormControl>
           <TextField
-            className="password"
+            className="password mb-3"
             label="Password"
             variant="outlined"
             type='password'
@@ -116,7 +116,7 @@ const Signup = () => {
             helperText={passwordError}
           />
           <TextField
-            className="confirmpassword"
+            className="confirmpassword mb-3"
             label="Confirm Password"
             variant="outlined"
             fullWidth

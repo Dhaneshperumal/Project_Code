@@ -53,10 +53,10 @@ const Login = () => {
             navigate('/admin');
             break;
           case 'Senior Developer':
-            navigate('/senior-dashboard');
+            navigate('/senior');
             break;
           case 'Junior Developer':
-            navigate('/junior-dashboard');
+            navigate('/junior');
             break;
           default:
             navigate('/unauthorized');

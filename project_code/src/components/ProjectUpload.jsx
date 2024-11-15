@@ -9,6 +9,7 @@ const ProjectUpload = () => {
   const [projectFile, setProjectFile] = useState(null);
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState('');
   const [uploadType, setUploadType] = useState('file'); // Default to file upload
+  const [supplyId, setSupplyId] = useState(''); // Add state for supplyId
   const navigate = useNavigate();
 
   const handleProjectNameChange = (e) => {
@@ -35,65 +36,62 @@ const ProjectUpload = () => {
     }
   };
 
+  const handleSupplyIdChange = (e) => {
+    setSupplyId(e.target.value); // Add a function to handle supplyId changes
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (projectName && (projectFile || gitRepositoryUrl)) {
-      try {
-        const formData = new FormData();
-        formData.append('projectName', projectName);
+        try {
+            const formData = new FormData();
+            formData.append('name', projectName);
+            formData.append('supplyId', supplyId); // Ensure supplyId is defined somewhere in your code
 
-        if (uploadType === 'file' && projectFile) {
-          formData.append('projectFile', projectFile);
-        } else if (uploadType === 'git' && gitRepositoryUrl) {
-          formData.append('gitRepositoryUrl', gitRepositoryUrl);
-        } else {
-          alert('Please select a valid upload method.');
-          return;
+            if (uploadType === 'file' && projectFile) {
+                formData.append('projectFile', projectFile);
+            } else if (uploadType === 'git' && gitRepositoryUrl) {
+                formData.append('gitRepositoryUrl', gitRepositoryUrl);
+            } else {
+                alert('Please select a valid upload method.');
+                return;
+            }
+
+            const token = localStorage.getItem('token'); // Assuming your token is stored in localStorage
+            console.log("Token:", token);
+            // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Setting the Authorization header
+
+            const response = await axios.post('http://localhost:8080/api/projects', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+            console.log(response.data);
+
+            alert('Project Uploaded Successfully');
+            navigate('/dashboard/junior-dashboard');
+        } catch (error) {
+            handleErrorResponse(error);
         }
-
-        const token = localStorage.getItem('token');
-        if (token) {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        if (!token) {
-          alert('Authentication token is missing. Please log in again.');
-          return;
-        }
-
-        const response = await axios.post('http://localhost:8080/api/projects', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        alert('Project Uploaded Successfully');
-        navigate('/dashboard/junior-dashboard');
-      } catch (error) {
-        handleErrorResponse(error);
-      }
     } else {
-      alert('Please fill in all fields.');
+        alert('Please fill in all fields.');
     }
-  };
+};
 
-  const handleErrorResponse = (error) => {
-    if (error.response) {
-      console.error('Error response:', error.response.data);
-      if (error.response.status === 403) {
-        const errorMessage = error.response.data.message || 'Forbidden: You do not have permission to perform this action.';
-        alert(`Error: ${errorMessage}`);
-      } else {
-        alert(`Error: ${error.response.data.message || 'Project upload failed. Please try again.'}`);
-      }
-    } else if (error.request) {
-      console.error('No response received:', error.request);
-      alert('No response from server. Please try again later.');
-    } else {
-      console.error('Error setting up request:', error.message);
-      alert(`Error: ${error.message}`);
-    }
-  };
+
+const handleErrorResponse = (error) => {
+  if (error.response) {
+    console.error('Error response:', error.response.data);
+    alert(`Error: ${error.response.data.message || 'Request failed'}`);
+  } else if (error.request) {
+    console.error('No response received:', error.request);
+    alert('Server is unreachable. Please try again later.');
+  } else {
+    console.error('Error setting up request:', error.message);
+    alert(`Error: ${error.message}`);
+  }
+};
 
   return (
     <div className='d-flex'>
@@ -144,6 +142,16 @@ const ProjectUpload = () => {
                   />
                 </Grid>
               )}
+              <Grid item xs={12}>
+                <TextField
+                  label="Supply ID"
+                  variant="outlined"
+                  fullWidth
+                  value={supplyId}
+                  onChange={handleSupplyIdChange}
+                  required
+                />
+              </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" color="primary" type="submit" fullWidth>
                   Upload
